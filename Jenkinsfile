@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "manojkrishnappa/adservice:${GIT_COMMIT}"
+        IMAGE_NAME = "rohitkube/adservice:${GIT_COMMIT}"
     }
 
     stages {
 
         stage('Git Checkout') {
             steps {
-                git url: 'https://github.com/ITkannadigaru/adservice.git', branch: 'main'
+                git url: 'https://github.com/DevopsLearn73/adservice.git', branch: 'main'
             }
         }
 
@@ -40,34 +40,34 @@ pipeline {
             }
         }
 
-        stage('Update GitOps Deployment') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'github-creds',
-                    usernameVariable: 'GIT_USERNAME',
-                    passwordVariable: 'GIT_PASSWORD'
-                )]) {
-                    sh '''
-                        if [ -d "gitops" ]; then
-                            echo "gitops directory exists. Removing it..."
-                            rm -rf gitops
-                        fi
-                        git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/ITkannadigaru/GitOps.git gitops
-                        cd gitops/base/adservice/
+        // stage('Update GitOps Deployment') {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'github-creds',
+        //             usernameVariable: 'GIT_USERNAME',
+        //             passwordVariable: 'GIT_PASSWORD'
+        //         )]) {
+        //             sh '''
+        //                 if [ -d "gitops" ]; then
+        //                     echo "gitops directory exists. Removing it..."
+        //                     rm -rf gitops
+        //                 fi
+        //                 git clone https://$GIT_USERNAME:$GIT_PASSWORD@github.com/ITkannadigaru/GitOps.git gitops
+        //                 cd gitops/base/adservice/
 
-                        git config user.email "jenkins@ci.com"
-                        git config user.name "jenkins"
+        //                 git config user.email "jenkins@ci.com"
+        //                 git config user.name "jenkins"
 
-                        # Update image tag
-                        sed -i "s|image: .*adservice.*|image: ${IMAGE_NAME}|g" deployment.yaml
+        //                 # Update image tag
+        //                 sed -i "s|image: .*adservice.*|image: ${IMAGE_NAME}|g" deployment.yaml
 
-                        git add .
-                        git commit -m "Update adservice image to ${IMAGE_NAME}"
-                        git push origin main
-                    '''
-                }
-            }
-        }
+        //                 git add .
+        //                 git commit -m "Update adservice image to ${IMAGE_NAME}"
+        //                 git push origin main
+        //             '''
+        //         }
+        //     }
+        // }
 
     }
 
